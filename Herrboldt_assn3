@@ -1,0 +1,27 @@
+#! /bin/bash
+
+###I want to make a file of only the unique snake IDs so that I can then make an individual file for each
+##cut the ID column then reverse grep, then sort and take only the uniq IDs
+cut -f 1 BTS_data.txt | grep -v ID | sort | uniq > unique_ID
+
+##Here I am using a while loop to make  a file for each individual snake ID and changing the name so the file is name file_snakeID
+while read line; do touch file_$line; done < unique_ID
+
+##remove my intermediate file
+rm unique_ID
+
+##Here I am making an array with just the unique snake IDs so there should be 424 elements in this array.
+##This is so that I can use a loop and grep to tell the computer I want it to take the data for each element in my array
+##Similar to my first command I cut out the column I want, reverse grep it, sort it, and only take the unique IDs so there are not multiple copies
+ID_array=($(cut -f 1 BTS_data.txt | grep -v ID | sort | uniq))
+
+##This is a for loop that I am feeding my array. So I am telling it to loop through the elements in my array, grep the data for each of the elements and then put them in the files that I created for each specific ID
+##So it would start on the first snake ID or first element in my array, grep the associated data, put it into the associated file, and then loop to the second ID/element
+for ID in ${ID_array[@]}; do grep "$ID" BTS_data.txt > file_"$ID"; done
+
+##Here I am printing a list of the files I made to the STDOUT and then using echo and the command wc to print to the STDOUT how many files I created
+ls file_* | echo "There are $(wc -l) files in this directory"
+
+
+
+
